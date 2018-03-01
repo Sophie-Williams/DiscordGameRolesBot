@@ -1,0 +1,8 @@
+{
+	"rolePrefix": "🎮",
+	"roleColor": "F1C40F",
+	"roleHoist": true,
+	"roleMentionable": true,
+	"enable": true,
+	"configRole": "@everyone"
+}
