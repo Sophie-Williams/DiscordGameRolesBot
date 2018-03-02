@@ -1,3 +1,8 @@
 token.json
+<<<<<<< HEAD
 guildConfig
 node_modules
+=======
+node_modules
+guildConfig
+>>>>>>> master
