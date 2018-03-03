@@ -107,23 +107,21 @@ function addRoles(callObj) {
 			if (type == "PLAYING") {
 				var rexists = false;
 				var aname = activity.name;
-				if (aname.indexof("GWENT") == -1) {
-					for (var role = 0; role < roles.length; role++) {
-						var rname = roles[role].name;
-						console.log("+++ activity name: " + rname);
-						var zldebug = (rname == guildConfig.rolePrefix+" "+aname);
-						console.log("+++ exist: " + zldebug)
-						if (rname == guildConfig.rolePrefix+" "+aname) {
-							rexists = true;
-						}
+				for (var role = 0; role < roles.length; role++) {
+					var rname = roles[role].name;
+					console.log("+++ activity name: " + rname);
+					var zldebug = (rname == guildConfig.rolePrefix+" "+aname);
+					console.log("+++ exist: " + zldebug)
+					if (rname == guildConfig.rolePrefix+" "+aname) {
+						rexists = true;
 					}
-					if (rexists == false) {
-						console.log("--- activity name: " + guildConfig.rolePrefix+" "+aname);
-						guild.createRole({data: {name: guildConfig.rolePrefix+" "+aname, color: guildConfig.roleColor, hoist: guildConfig.roleHoist, mentionable: guildConfig.roleMentionable}});
-					} else {
-						console.log("--- nope");
-						addToRole(callObj);
-					}
+				}
+				if (rexists == false) {
+					console.log("--- activity name: " + guildConfig.rolePrefix+" "+aname);
+					guild.createRole({data: {name: guildConfig.rolePrefix+" "+aname, color: guildConfig.roleColor, hoist: guildConfig.roleHoist, mentionable: guildConfig.roleMentionable}});
+				} else {
+					console.log("--- nope");
+					addToRole(callObj);
 				}
 			}
 		}
