@@ -1,4 +1,4 @@
-// process.chdir('/home/zlyfer/DiscordBots');
+// process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
 const fs = require("fs");
 const Discord = require('discord.js');
 const bot = new Discord.Client();
@@ -201,7 +201,7 @@ bot.on('message', (message) => {
 							"enable": {"parameter": "true/false", "desc": "This command can enable and disable the bot."},
 							"configRole": {"parameter": "text/false", "desc": "Specifies the role the bot listens to. 'false' = owner only."}
 						};
-						var reply = message.member + ": Help is on the way:\n";
+						var reply = "help is on the way:\n";
 						reply += "Make sure to use **~zlgr~** as prefix!\n";
 						reply += "The format is: **COMMAND** __PARAMETER__ - *DESCRIPTION*.\n\n";
 						for (var key in helpObj) {
@@ -210,7 +210,7 @@ bot.on('message', (message) => {
 						message.reply(reply);
 						break;
 					case "showSettings":
-						var reply = message.member + ": These are the current settings and their values:\n";
+						var reply = "these are the current settings and their values:\n";
 						for (var key in guildConfig) {
 							reply += "**" + key + "**: __" + guildConfig[key] + "__\n";
 						}
@@ -218,7 +218,7 @@ bot.on('message', (message) => {
 						break;
 					case "rolePrefix":
 						if (newValue.length < 1) {
-							message.reply(message.member + ": You need to specify at least one character.");
+							message.reply("you need to specify at least one character.");
 						} else {
 							changeValid = true;
 						}
@@ -226,21 +226,21 @@ bot.on('message', (message) => {
 					case "roleColor":
 						changeValid = /^[0-9A-F]{6}$/i.test(newValue);
 						if (changeValid == false) {
-							message.reply(message.member + ": You need to specify a valid HEX color format. (Example: FF0000)");
+							message.reply("you need to specify a valid HEX color format. (Example: FF0000)");
 						}
 						break;
 					case "roleHoist":
 						if (newValue == "true" || newValue == "false") {
 							changeValid = true;
 						} else {
-							message.reply(message.member + ": Please use either true or false.");
+							message.reply("please use either true or false.");
 						}
 						break;
 					case "roleMentionable":
 						if (newValue == "true" || newValue == "false") {
 							changeValid = true;
 						} else {
-							message.reply(message.member + ": Please use either true or false.");
+							message.reply("please use either true or false.");
 						}
 						break;
 					case "configRole":
@@ -254,7 +254,7 @@ bot.on('message', (message) => {
 								}
 							}
 							if (changeValid == false) {
-								message.reply(message.member + ": You need to specifiy an existing role. Please add the role **" + newValue + "** and try again.");
+								message.reply("you need to specifiy an existing role. Please add the role **" + newValue + "** and try again.");
 							}
 						}
 						break;
@@ -262,19 +262,19 @@ bot.on('message', (message) => {
 						if (newValue == "true" || newValue == "false") {
 							changeValid = true;
 						} else {
-							message.reply(message.member + ": Please use either true or false.");
+							message.reply("please use either true or false.");
 						}
 						break;
 				}
 				if (changeValid == true) {
 					changeConfig(message.guild, cmd, newValue);
-					message.reply(message.member + ": **" + cmd + "** *has been changed to* **" + newValue + "**.");
+					message.reply("**" + cmd + "** *has been changed to* **" + newValue + "**.");
 				}
 			} else {
-				message.reply("Sorry " + message.member + ", but you seem to lack on rights to use me.")
+				message.reply("sorry but you seem to lack on rights to use me.")
 			}
 		} else {
-			message.reply("Sorry, but I am supposed to be controlled via a text channel on a discord server.");
+			message.reply(" sorry, but I am supposed to be controlled via a text channel on a discord server.");
 		}
 	}
 });
