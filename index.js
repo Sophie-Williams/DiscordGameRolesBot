@@ -213,6 +213,7 @@ bot.on('message', (message) => {
 						for (var key in helpObj) {
 							reply += "**" + key + "** __" + helpObj[key].parameter + "__ - *" + helpObj[key].desc + "*\n";
 						}
+						reply += "\nINFO: If you encounter any issues or have questions, feel free to contact me.\n";
 						message.reply(reply);
 						break;
 					case "showSettings":
