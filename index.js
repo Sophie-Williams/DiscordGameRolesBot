@@ -1,4 +1,4 @@
-// process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
+//process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
 const fs = require("fs");
 const Discord = require('discord.js');
 const bot = new Discord.Client();
