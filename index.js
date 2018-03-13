@@ -1,14 +1,16 @@
-//process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
-const fs = require("fs");
+process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+
+const fs = require("fs");
 const token = require("./token.json");
+const guildConfigFolder = "./guildConfig/";
 const configTemplate = require("./configTemplate.json");
 
 function configSetup() {
 	var guilds = bot.guilds.array();
 	for (guild = 0; guild < guilds.length; guild++) {
-		var guildFile = "./guildConfig/" + guilds[guild].id + ".json";
+		var guildFile = guildConfigFolder + guilds[guild].id + ".json";
 		if (!fs.existsSync(guildFile)) {
 			fs.writeFileSync(guildFile, JSON.stringify(configTemplate), 'utf-8');
 		} else {
@@ -50,7 +52,7 @@ function editRoles(guild, oldRolePrefix) {
 }
 
 function changeConfig(guild, key, newValue) {
-	var guildFile = "./guildConfig/" + guild.id + ".json";
+	var guildFile = guildConfigFolder + guild.id + ".json";
 	var guildConfig = getConfig(guild.id);
 	var oldRolePrefix = guildConfig.rolePrefix;
 	if ("true".indexOf(newValue) != -1) {
