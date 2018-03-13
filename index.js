@@ -28,9 +28,13 @@ function configSetup() {
 }
 
 function getConfig(guildID) {
-	var guildFile = "./guildConfig/" + guildID + ".json";
-	var guildConfig = require(guildFile);
-	return guildConfig;
+	var cfile = guildConfigFolder + guildID + ".json";
+	if (fs.existsSync(cfile)) {
+		var config = require(cfile);
+	} else {
+		var config = configTemplate;
+	}
+	return config;
 }
 
 function editRoles(guild, oldRolePrefix) {
