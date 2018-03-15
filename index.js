@@ -286,7 +286,7 @@ bot.on('message', (message) => {
 });
 
 process.on('unhandledRejection', (err) => {
-	// console.error(err);
+	console.error(err);
 })
 
 bot.login(token.token);
