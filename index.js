@@ -88,12 +88,12 @@ function addToRole(callObj) {
 	}
 	var presences = Array.from(guild.presences.entries());
 	for (var presence = 0; presence < presences.length; presence++) {
-		var activity = presences[presence][1].activity;
-		if (activity != null) {
-			if (activity.type == "PLAYING") {
-				var aname = activity.name;
+		var game = presences[presence][1].game;
+		if (game != null) {
+			var gname = game.name;
+			if (gname != "Spotify") {
 				var currentmember = memberObj[presences[presence][0]];
-				newrole = roleObj[guildConfig.rolePrefix+" "+aname];
+				newrole = roleObj[guildConfig.rolePrefix+" "+gname];
 				currentmember.addRole(newrole);
 			}
 		}
@@ -106,27 +106,26 @@ function addRoles(callObj) {
 	var roles = guild.roles.array();
 	var presences = Array.from(guild.presences.entries());
 	for (var presence = 0; presence < presences.length; presence++) {
-		var activity = presences[presence][1].activity;
-		if (activity != null) {
+		var game = presences[presence][1].game;
+		if (game != null) {
 			var id = presences[presence][0];
-			var type = activity.type;
-			if (type == "PLAYING") {
 				var rexists = false;
-				var aname = activity.name;
+				var gname = game.name;
+				if (gname != "Spotify") {
 				for (var role = 0; role < roles.length; role++) {
 					var rname = roles[role].name;
-					console.log("+++ activity name: " + rname);
-					var zldebug = (rname == guildConfig.rolePrefix+" "+aname);
-					console.log("+++ exist: " + zldebug)
-					if (rname == guildConfig.rolePrefix+" "+aname) {
+					if (rname == guildConfig.rolePrefix+" "+gname) {
 						rexists = true;
 					}
 				}
 				if (rexists == false) {
-					console.log("--- activity name: " + guildConfig.rolePrefix+" "+aname);
-					guild.createRole({data: {name: guildConfig.rolePrefix+" "+aname, color: guildConfig.roleColor, hoist: guildConfig.roleHoist, mentionable: guildConfig.roleMentionable}});
+					guild.createRole({
+						name: guildConfig.rolePrefix+" "+gname,
+						color: guildConfig.roleColor,
+						hoist: guildConfig.roleHoist,
+						mentionable: guildConfig.roleMentionable
+					});
 				} else {
-					console.log("--- nope");
 					addToRole(callObj);
 				}
 			}
@@ -143,21 +142,21 @@ function checkPerm(guild, permission) {
 function fManage(callObj, caller) {
 	var guild = callObj.guild;
 	var roleslength = guild.roles.array().length;
-		if (roleslength < 250) {
-			if (checkPerm(guild, "MANAGE_ROLES")) {
-				var guildConfig = getConfig(guild.id);
-				if (guildConfig.enable == true) {
-					if (caller == "presenceUpdate") {
-						if (callObj.user.bot == false) {
-							addRoles(callObj);
-						}
-					} else if (caller = "roleCreate") {
-						addToRole(callObj);
-					} else {}
-				}
+	if (roleslength < 250) {
+		if (checkPerm(guild, "MANAGE_ROLES")) {
+			var guildConfig = getConfig(guild.id);
+			if (guildConfig.enable == true) {
+				if (caller == "presenceUpdate") {
+					if (callObj.user.bot == false) {
+						addRoles(callObj);
+					}
+				} else if (caller = "roleCreate") {
+					addToRole(callObj);
+				} else {}
 			}
-		} else {
 		}
+	} else {
+	}
 }
 
 bot.on('presenceUpdate', (oldMember, newMember) => {
@@ -287,7 +286,7 @@ bot.on('message', (message) => {
 });
 
 process.on('unhandledRejection', (err) => {
-	console.error(err);
+	// console.error(err);
 })
 
 bot.login(token.token);
