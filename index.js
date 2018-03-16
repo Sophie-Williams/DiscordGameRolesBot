@@ -80,7 +80,9 @@ function addToRole(callObj) {
 	var roles = guild.roles.array();
 	var memberObj = {};
 	for (var member = 0; member < members.length; member++) {
-		memberObj[members[member].id] = members[member];
+		if (members[member].user.bot == false) {
+			memberObj[members[member].id] = members[member];
+		}
 	}
 	var roleObj = {};
 	for (var role = 0; role < roles.length; role++) {
@@ -92,9 +94,11 @@ function addToRole(callObj) {
 		if (game != null) {
 			var gname = game.name;
 			if (gname != "Spotify") {
-				var currentmember = memberObj[presences[presence][0]];
-				newrole = roleObj[guildConfig.rolePrefix+" "+gname];
-				currentmember.addRole(newrole);
+				if (presences[presence][0] in memberObj) {
+					var currentmember = memberObj[presences[presence][0]];
+					newrole = roleObj[guildConfig.rolePrefix+" "+gname];
+					currentmember.addRole(newrole);
+				}
 			}
 		}
 	}
