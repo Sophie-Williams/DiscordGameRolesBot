@@ -6,6 +6,7 @@ const fs = require("fs");
 const token = require("./token.json");
 const guildConfigFolder = "./guildConfig/";
 const configTemplate = require("./configTemplate.json");
+const botPrefix = "~zlgr~";
 
 function configSetup() {
 	var guilds = bot.guilds.array();
@@ -65,14 +66,6 @@ function changeConfig(guild, key, newValue) {
 	editRoles(guild, oldRolePrefix);
 }
 
-bot.on('ready', () => {
-	configSetup();
-})
-
-bot.on('guildCreate', (guild) => {
-	configSetup();
-})
-
 function addToRole(callObj) {
  	var guild = callObj.guild;
 	var guildConfig = getConfig(guild.id);
@@ -84,10 +77,10 @@ function addToRole(callObj) {
 			memberObj[members[member].id] = members[member];
 		}
 	}
-	var roleObj = {};
-	for (var role = 0; role < roles.length; role++) {
-		roleObj[roles[role].name] = roles[role].id;
-	}
+	// var roleObj = {};
+	// for (var role = 0; role < roles.length; role++) {
+	// 	roleObj[roles[role].name] = roles[role].id;
+	// }
 	var presences = Array.from(guild.presences.entries());
 	for (var presence = 0; presence < presences.length; presence++) {
 		var game = presences[presence][1].game;
@@ -96,7 +89,8 @@ function addToRole(callObj) {
 			if (gname != "Spotify") {
 				if (presences[presence][0] in memberObj) {
 					var currentmember = memberObj[presences[presence][0]];
-					newrole = roleObj[guildConfig.rolePrefix+" "+gname];
+					// newrole = roleObj[guildConfig.rolePrefix+" "+gname];
+					var newrole = guild.roles.find('name', guildConfig.rolePrefix+" "+gname).id
 					currentmember.addRole(newrole);
 				}
 			}
@@ -163,6 +157,21 @@ function fManage(callObj, caller) {
 	}
 }
 
+bot.on('ready', () => {
+	bot.user.setPresence({
+	  "status": "online",
+	  "afk": false,
+	  "game": {
+	    "name": "Use "+botPrefix+"help for help!"
+	  }
+	})
+	.then(console.log("Bot ready."));
+	configSetup();
+})
+
+bot.on('guildCreate', (guild) => {
+	configSetup();
+})
 bot.on('presenceUpdate', (oldMember, newMember) => {
 	fManage(newMember, "presenceUpdate");
 })
@@ -173,9 +182,9 @@ bot.on('roleCreate', (role) => {
 
 bot.on('message', (message) => {
 	var content = message.content;
-	if (message.author.bot == false && content.indexOf("~zlgr~") != -1) {
+	if (message.author.bot == false && content.indexOf(botPrefix) != -1) {
 		if (message.channel.type == "text") {
-			content = content.replace("~zlgr~", "");
+			content = content.replace(botPrefix, "");
 			var guildConfig = getConfig(message.guild.id);
 			var hasRights = false;
 			if (guildConfig.configRole != false) {
@@ -211,7 +220,7 @@ bot.on('message', (message) => {
 							"configRole": {"parameter": "text/false", "desc": "Specifies the role the bot listens to. 'false' = owner only."}
 						};
 						var reply = "help is on the way:\n";
-						reply += "Make sure to use **~zlgr~** as prefix!\n";
+						reply += "Make sure to use **" + botPrefix + "** as prefix!\n";
 						reply += "The format is: **COMMAND** __PARAMETER__ - *DESCRIPTION*.\n\n";
 						for (var key in helpObj) {
 							reply += "**" + key + "** __" + helpObj[key].parameter + "__ - *" + helpObj[key].desc + "*\n";
