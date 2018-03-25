@@ -175,7 +175,9 @@ client.on('guildCreate', (guild) => {
 	configSetup();
 })
 client.on('presenceUpdate', (oldMember, newMember) => {
-	fManage(newMember, "presenceUpdate");
+	if (!(newMember.user.bot)) {
+		fManage(newMember, "presenceUpdate");
+	}
 })
 
 client.on('roleCreate', (role) => {
