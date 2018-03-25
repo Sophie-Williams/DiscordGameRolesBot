@@ -86,7 +86,7 @@ function addToRole(callObj) {
 		var game = presences[presence][1].game;
 		if (game != null) {
 			var gname = game.name;
-			if (gname != "Spotify") {
+			if (gname != "Spotify") { // What are they thinking that Spotify is a game..
 				if (presences[presence][0] in memberObj) {
 					var currentmember = memberObj[presences[presence][0]];
 					// newrole = roleObj[guildConfig.rolePrefix+" "+gname];
@@ -106,27 +106,32 @@ function addRoles(callObj) {
 	var roles = guild.roles.array();
 	var presences = Array.from(guild.presences.entries());
 	for (var presence = 0; presence < presences.length; presence++) {
-		var game = presences[presence][1].game;
-		if (game != null) {
-			var id = presences[presence][0];
-				var rexists = false;
-				var gname = game.name;
-				if (gname != "Spotify") {
-				for (var role = 0; role < roles.length; role++) {
-					var rname = roles[role].name;
-					if (rname == guildConfig.rolePrefix+" "+gname) {
-						rexists = true;
+		var member = guild.members.find('id', presences[presence][0]);
+		if (member) {
+			if (!(member.user.bot)) {
+				var game = presences[presence][1].game;
+				if (game != null) {
+					var id = presences[presence][0];
+					var rexists = false;
+					var gname = game.name;
+					if (gname != "Spotify") {
+						for (var role = 0; role < roles.length; role++) {
+							var rname = roles[role].name;
+							if (rname == guildConfig.rolePrefix+" "+gname) {
+								rexists = true;
+							}
+						}
+						if (rexists == false) {
+							guild.createRole({
+							name: guildConfig.rolePrefix+" "+gname,
+							color: guildConfig.roleColor,
+							hoist: guildConfig.roleHoist,
+							mentionable: guildConfig.roleMentionable
+							});
+						} else {
+							addToRole(callObj);
+						}
 					}
-				}
-				if (rexists == false) {
-					guild.createRole({
-						name: guildConfig.rolePrefix+" "+gname,
-						color: guildConfig.roleColor,
-						hoist: guildConfig.roleHoist,
-						mentionable: guildConfig.roleMentionable
-					});
-				} else {
-					addToRole(callObj);
 				}
 			}
 		}
@@ -174,6 +179,7 @@ client.on('ready', () => {
 client.on('guildCreate', (guild) => {
 	configSetup();
 })
+
 client.on('presenceUpdate', (oldMember, newMember) => {
 	if (!(newMember.user.bot)) {
 		fManage(newMember, "presenceUpdate");
