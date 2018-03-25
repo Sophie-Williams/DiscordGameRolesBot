@@ -90,8 +90,10 @@ function addToRole(callObj) {
 				if (presences[presence][0] in memberObj) {
 					var currentmember = memberObj[presences[presence][0]];
 					// newrole = roleObj[guildConfig.rolePrefix+" "+gname];
-					var newrole = guild.roles.find('name', guildConfig.rolePrefix+" "+gname).id
-					currentmember.addRole(newrole);
+					var newrole = guild.roles.find('name', guildConfig.rolePrefix+" "+gname);
+					if (newrole) {
+						currentmember.addRole(newrole);
+					}
 				}
 			}
 		}
