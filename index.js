@@ -1,6 +1,6 @@
 process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
 const Discord = require('discord.js');
-const bot = new Discord.Client();
+const client = new Discord.Client();
 
 const fs = require("fs");
 const token = require("./token.json");
@@ -9,7 +9,7 @@ const configTemplate = require("./configTemplate.json");
 const botPrefix = "~zlgr~";
 
 function configSetup() {
-	var guilds = bot.guilds.array();
+	var guilds = client.guilds.array();
 	for (guild = 0; guild < guilds.length; guild++) {
 		var guildFile = guildConfigFolder + guilds[guild].id + ".json";
 		if (!fs.existsSync(guildFile)) {
@@ -132,7 +132,7 @@ function addRoles(callObj) {
 }
 
 function checkPerm(guild, permission) {
-	const botID = bot.user.id;
+	const botID = client.user.id;
 	var hasPerm = guild.members.find('id', botID).hasPermission(permission);
 	return (hasPerm)
 }
@@ -157,8 +157,8 @@ function fManage(callObj, caller) {
 	}
 }
 
-bot.on('ready', () => {
-	bot.user.setPresence({
+client.on('ready', () => {
+	client.user.setPresence({
 	  "status": "online",
 	  "afk": false,
 	  "game": {
@@ -169,18 +169,18 @@ bot.on('ready', () => {
 	configSetup();
 })
 
-bot.on('guildCreate', (guild) => {
+client.on('guildCreate', (guild) => {
 	configSetup();
 })
-bot.on('presenceUpdate', (oldMember, newMember) => {
+client.on('presenceUpdate', (oldMember, newMember) => {
 	fManage(newMember, "presenceUpdate");
 })
 
-bot.on('roleCreate', (role) => {
+client.on('roleCreate', (role) => {
 	fManage(role, "roleCreate");
 });
 
-bot.on('message', (message) => {
+client.on('message', (message) => {
 	var content = message.content;
 	if (message.author.bot == false && content.indexOf(botPrefix) != -1) {
 		if (message.channel.type == "text") {
@@ -302,4 +302,4 @@ process.on('unhandledRejection', (err) => {
 	console.error(err);
 })
 
-bot.login(token.token);
+client.login(token.token);
