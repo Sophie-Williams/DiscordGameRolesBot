@@ -66,102 +66,10 @@ function changeConfig(guild, key, newValue) {
 	editRoles(guild, oldRolePrefix);
 }
 
-function addToRole(callObj) {
- 	var guild = callObj.guild;
-	var guildConfig = getConfig(guild.id);
-	var members = guild.members.array();
-	var roles = guild.roles.array();
-	var memberObj = {};
-	for (var member = 0; member < members.length; member++) {
-		if (members[member].user.bot == false) {
-			memberObj[members[member].id] = members[member];
-		}
-	}
-	// var roleObj = {};
-	// for (var role = 0; role < roles.length; role++) {
-	// 	roleObj[roles[role].name] = roles[role].id;
-	// }
-	var presences = Array.from(guild.presences.entries());
-	for (var presence = 0; presence < presences.length; presence++) {
-		var game = presences[presence][1].game;
-		if (game != null) {
-			var gname = game.name;
-			if (gname != "Spotify") { // What are they thinking that Spotify is a game..
-				if (presences[presence][0] in memberObj) {
-					var currentmember = memberObj[presences[presence][0]];
-					// newrole = roleObj[guildConfig.rolePrefix+" "+gname];
-					var newrole = guild.roles.find('name', guildConfig.rolePrefix+" "+gname);
-					if (newrole) {
-						currentmember.addRole(newrole);
-					}
-				}
-			}
-		}
-	}
-}
-
-function addRoles(callObj) {
-	var guild = callObj.guild;
-	var guildConfig = getConfig(guild.id);
-	var roles = guild.roles.array();
-	var presences = Array.from(guild.presences.entries());
-	for (var presence = 0; presence < presences.length; presence++) {
-		var member = guild.members.find('id', presences[presence][0]);
-		if (member) {
-			if (!(member.user.bot)) {
-				var game = presences[presence][1].game;
-				if (game != null) {
-					var id = presences[presence][0];
-					var rexists = false;
-					var gname = game.name;
-					if (gname != "Spotify") {
-						for (var role = 0; role < roles.length; role++) {
-							var rname = roles[role].name;
-							if (rname == guildConfig.rolePrefix+" "+gname) {
-								rexists = true;
-							}
-						}
-						if (rexists == false) {
-							guild.createRole({
-							name: guildConfig.rolePrefix+" "+gname,
-							color: guildConfig.roleColor,
-							hoist: guildConfig.roleHoist,
-							mentionable: guildConfig.roleMentionable
-							});
-						} else {
-							addToRole(callObj);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 function checkPerm(guild, permission) {
 	const botID = client.user.id;
 	var hasPerm = guild.members.find('id', botID).hasPermission(permission);
 	return (hasPerm)
-}
-
-function fManage(callObj, caller) {
-	var guild = callObj.guild;
-	var roleslength = guild.roles.array().length;
-	if (roleslength < 250) {
-		if (checkPerm(guild, "MANAGE_ROLES")) {
-			var guildConfig = getConfig(guild.id);
-			if (guildConfig.enable == true) {
-				if (caller == "presenceUpdate") {
-					if (callObj.user.bot == false) {
-						addRoles(callObj);
-					}
-				} else if (caller = "roleCreate") {
-					addToRole(callObj);
-				} else {}
-			}
-		}
-	} else {
-	}
 }
 
 client.on('ready', () => {
@@ -169,7 +77,7 @@ client.on('ready', () => {
 	  "status": "online",
 	  "afk": false,
 	  "game": {
-	    "name": "Use "+botPrefix+"help for help!"
+	    "name": "Use " + botPrefix + "help for help!"
 	  }
 	})
 	.then(console.log("Bot ready."));
@@ -181,14 +89,32 @@ client.on('guildCreate', (guild) => {
 })
 
 client.on('presenceUpdate', (oldMember, newMember) => {
-	if (!(newMember.user.bot)) {
-		fManage(newMember, "presenceUpdate");
+	if (newMember) {
+		if (!(newMember.user.bot)) {
+			var guild = newMember.guild;
+			if (checkPerm(guild, "MANAGE_ROLES")) {
+				if (guild.roles.array().length < 240) {
+		 			var guildConfig = getConfig(guild.id);
+					if (guildConfig.enable) {
+						var game = newMember.presence.game;
+						if (game) {
+							var roleExists = guild.roles.find('name', `${guildConfig.rolePrefix} ${game.name}`);
+							if (!(roleExists)) {
+								guild.createRole({
+									name: `${guildConfig.rolePrefix} ${game.name}`,
+									color: guildConfig.roleColor,
+									hoist: guildConfig.roleHoist,
+									mentionable: guildConfig.roleMentionable
+								})
+								.then(role => newMember.addRole(role));
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 })
-
-client.on('roleCreate', (role) => {
-	fManage(role, "roleCreate");
-});
 
 client.on('message', (message) => {
 	var content = message.content;
