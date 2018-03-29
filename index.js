@@ -98,8 +98,10 @@ client.on('presenceUpdate', (oldMember, newMember) => {
 					if (guildConfig.enable) {
 						var game = newMember.presence.game;
 						if (game) {
-							var roleExists = guild.roles.find('name', `${guildConfig.rolePrefix} ${game.name}`);
-							if (!(roleExists)) {
+							var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${game.name}`);
+							if (role) {
+								newMember.addRole(role);
+							} else {
 								guild.createRole({
 									name: `${guildConfig.rolePrefix} ${game.name}`,
 									color: guildConfig.roleColor,
