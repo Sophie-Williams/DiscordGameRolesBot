@@ -103,7 +103,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
           if (guildConfig.enable) {
             var game = newMember.presence.game;
             if (game) {
-              var gname = game.name.replace(/[^\w\s!]/gi, '').toUpperCase();
+              var gname = game.name.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]|[^\w\s!]/gi, ' ').toUpperCase();
               var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
               if (role) {
                 newMember.addRole(role);
