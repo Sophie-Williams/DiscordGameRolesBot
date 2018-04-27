@@ -77,6 +77,29 @@ function checkPerm(guild, permission) {
   return (hasPerm)
 }
 
+function convertToNewSystem() {
+  var guilds = client.guilds.array();
+  for (let l = 0; l < guilds.length; l++) {
+    var guild = guilds[l];
+    var guildConfig = getConfig(guild.id);
+    console.log(`Processing guild ${guild.name}:`);
+    if (checkPerm(guild, "MANAGE_ROLES")) {
+      var roles = guild.roles.array();
+      var rcount = 0;
+      for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name.indexOf(guildConfig.rolePrefix) != -1) {
+          console.log(`- Converting role ${roles[i].name}..`);
+          var rname = roles[i].name.replace(/[^\w\s!]/gi, '').toUpperCase();
+          roles[i].setName(`${guildConfig.rolePrefix} ${rname}`)
+            .then(rcount++);
+        }
+      }
+    } else {
+      console.log(`- No permissions.`);
+    }
+  }
+}
+
 client.on('ready', () => {
   client.user.setPresence({
       "status": "online",
@@ -87,6 +110,7 @@ client.on('ready', () => {
     })
     .then(console.log("Bot ready."));
   configSetup();
+  convertToNewSystem();
 })
 
 client.on('guildCreate', (guild) => {
@@ -103,12 +127,13 @@ client.on('presenceUpdate', (oldMember, newMember) => {
           if (guildConfig.enable) {
             var game = newMember.presence.game;
             if (game) {
-              var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${game.name}`);
+              var gname = game.name.replace(/[^\w\s!]/gi, '').toUpperCase();
+              var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
               if (role) {
                 newMember.addRole(role);
               } else {
                 guild.createRole({
-                    name: `${guildConfig.rolePrefix} ${game.name}`,
+                    name: `${guildConfig.rolePrefix} ${gname}`,
                     color: guildConfig.roleColor,
                     hoist: guildConfig.roleHoist,
                     mentionable: guildConfig.roleMentionable
