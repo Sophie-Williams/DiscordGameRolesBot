@@ -77,6 +77,29 @@ function checkPerm(guild, permission) {
   return (hasPerm)
 }
 
+function tempRemRoles() {
+  var guilds = client.guilds.array();
+  for (let l = 0; l < guilds.length; l++) {
+    var guild = guilds[l];
+    var guildConfig = getConfig(guild.id);
+    console.log(`Processing guild ${guild.name}:`);
+    if (checkPerm(guild, "MANAGE_ROLES")) {
+      var roles = guild.roles.array();
+      var rcount = 0;
+      for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name.indexOf(guildConfig.rolePrefix) != -1) {
+          console.log(`- Deleting role ${roles[i].name}..`);
+          roles[i].delete("New name system, sorry for the inconvinience.")
+            .then(rcount++);
+        }
+      }
+      console.log(`Roles deleted: ${rcount}.`);
+    } else {
+      console.log(`- No permissions.`);
+    }
+  }
+}
+
 client.on('ready', () => {
   client.user.setPresence({
       "status": "online",
@@ -87,6 +110,7 @@ client.on('ready', () => {
     })
     .then(console.log("Bot ready."));
   configSetup();
+  tempRemRoles();
 })
 
 client.on('guildCreate', (guild) => {
@@ -186,10 +210,6 @@ client.on('message', (message) => {
                 "parameter": "text/false",
                 "desc": "Specifies the role the bot listens to. 'false' = owner only."
               },
-              "removeDuplicates": {
-                "parameter": "none",
-                "desc": "Removes all duplicate game roles and reassign their members to original role."
-              },
               "removeSingleRoles": {
                 "parameter": "none",
                 "desc": "Removes all roles created by this bot that have only 1 or less members."
@@ -203,23 +223,6 @@ client.on('message', (message) => {
             }
             reply += "\nINFO: If you encounter any issues or have questions, feel free to contact me.\n";
             message.reply(reply);
-            break;
-          case "removeSingleRoles":
-            if (checkPerm(message.guild, "MANAGE_ROLES")) {
-              var roles = message.guild.roles.array();
-              var deleted = 0;
-              for (let i = 0; i < roles.length; i++) {
-                if (roles[i].name.indexOf(guildConfig.rolePrefix) != -1) {
-                  if (roles[i].members.array().length <= 1) {
-                    roles[i].delete()
-                      .then(deleted++);
-                  }
-                }
-              }
-              message.reply(`${deleted} roles have been deleted.`);
-            } else {
-              message.reply(`Sorry, but I do not seem to have the permissions needed to perform this task.`);
-            }
             break;
           case "removeDuplicates":
             if (checkPerm(message.guild, "MANAGE_ROLES")) {
