@@ -77,29 +77,6 @@ function checkPerm(guild, permission) {
   return (hasPerm)
 }
 
-function tempRemRoles() {
-  var guilds = client.guilds.array();
-  for (let l = 0; l < guilds.length; l++) {
-    var guild = guilds[l];
-    var guildConfig = getConfig(guild.id);
-    console.log(`Processing guild ${guild.name}:`);
-    if (checkPerm(guild, "MANAGE_ROLES")) {
-      var roles = guild.roles.array();
-      var rcount = 0;
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name.indexOf(guildConfig.rolePrefix) != -1) {
-          console.log(`- Deleting role ${roles[i].name}..`);
-          roles[i].delete("New name system, sorry for the inconvinience.")
-            .then(rcount++);
-        }
-      }
-      console.log(`Roles deleted: ${rcount}.`);
-    } else {
-      console.log(`- No permissions.`);
-    }
-  }
-}
-
 client.on('ready', () => {
   client.user.setPresence({
       "status": "online",
@@ -110,7 +87,6 @@ client.on('ready', () => {
     })
     .then(console.log("Bot ready."));
   configSetup();
-  tempRemRoles();
 })
 
 client.on('guildCreate', (guild) => {
