@@ -46,6 +46,11 @@ function editRoles(guild, oldRolePrefix) {
   for (var role = 0; role < roles.length; role++) {
     var name = roles[role].name;
     var rawName = name.replace(guildConfig.rolePrefix + " ", "").replace(oldRolePrefix + " ", "");
+    if (guildConfig.roleLowercase) {
+      rawName = rawName.toLowerCase();
+    } else {
+      rawName = rawName.toUpperCase();
+    }
     if (name.indexOf(oldRolePrefix) != -1 || name.indexOf(guildConfig.rolePrefix) != -1) {
       roles[role].edit({
         name: guildConfig.rolePrefix + " " + rawName,
