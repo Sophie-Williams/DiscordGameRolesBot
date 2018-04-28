@@ -104,17 +104,19 @@ client.on('presenceUpdate', (oldMember, newMember) => {
             var game = newMember.presence.game;
             if (game) {
               var gname = game.name.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]|[^\w\s!]/gi, ' ').toUpperCase();
-              var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
-              if (role) {
-                newMember.addRole(role);
-              } else {
-                guild.createRole({
-                    name: `${guildConfig.rolePrefix} ${gname}`,
-                    color: guildConfig.roleColor,
-                    hoist: guildConfig.roleHoist,
-                    mentionable: guildConfig.roleMentionable
-                  })
-                  .then(role => newMember.addRole(role));
+              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname) == -1)) {
+                var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
+                if (role) {
+                  newMember.addRole(role);
+                } else {
+                  guild.createRole({
+                      name: `${guildConfig.rolePrefix} ${gname}`,
+                      color: guildConfig.roleColor,
+                      hoist: guildConfig.roleHoist,
+                      mentionable: guildConfig.roleMentionable
+                    })
+                    .then(role => newMember.addRole(role));
+                }
               }
             }
           }
@@ -189,6 +191,14 @@ client.on('message', (message) => {
               "removeSingleRoles": {
                 "parameter": "none",
                 "desc": "Removes all roles created by this bot that have only 1 or less members."
+              },
+              "blenable": {
+                "parameter": "true/false",
+                "desc": "Enable/Disable blacklist."
+              },
+              "blacklist": {
+                "parameter": "text",
+                "desc": "Add a name or more to the blacklist. If a given name is already present it will be removed. Can be comma-seperated: 'spotify, blender, game launcher'."
               }
             };
             var reply = "help is on the way:\n";
@@ -199,6 +209,37 @@ client.on('message', (message) => {
             }
             reply += "\nINFO: If you encounter any issues or have questions, feel free to contact me.\n";
             message.reply(reply);
+            break;
+          case "blacklist":
+            if (newValue.length > 0 && newValue[0] != ",") {
+              var newValues = newValue.split(',');
+              for (let i = 0; i < newValues.length; i++) {
+                let nv = newValues[i];
+                if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
+                  nv = nv.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]|[^\w\s!]/gi, ' ').toUpperCase();
+                  if (nv[0] == " ") {
+                    nv = nv.slice(1);
+                  }
+                  let iof = guildConfig.blacklist.indexOf(nv);
+                  if (iof != -1) {
+                    guildConfig.blacklist.splice(iof, 1);
+                  } else {
+                    guildConfig.blacklist.push(nv);
+                  }
+                }
+              }
+              newValue = guildConfig.blacklist;
+              changeValid = true;
+            } else {
+              message.reply("you need to specify at least one name.");
+            }
+            break;
+          case "blenable":
+            if (newValue == "true" || newValue == "false") {
+              changeValid = true;
+            } else {
+              message.reply("please use either true or false.");
+            }
             break;
           case "removeDuplicates":
             if (checkPerm(message.guild, "MANAGE_ROLES")) {

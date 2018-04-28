@@ -4,5 +4,7 @@
 	"roleHoist": true,
 	"roleMentionable": true,
 	"enable": true,
-	"configRole": "@everyone"
+	"configRole": "@everyone",
+	"blacklist": ["3DMARK", "DESMUME", "CUSTOM STATUS", "GETISTEAMCONTROLLER", "NVIDIA GEFORCE OVERLAY", "SPOTIFY", "VISUAL STUDIO CODE", "WARFRAME LAUNCHER", "GOOGLE", "BLENDER", "MANIAPLANET", "MEDIA PLAYER CLASSIC HOME CINEMA", "AIMP"],
+	"blenable": true
 }
