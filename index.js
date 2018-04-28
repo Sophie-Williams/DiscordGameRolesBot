@@ -243,38 +243,21 @@ client.on('message', (message) => {
               message.reply("please use either true or false.");
             }
             break;
-          case "removeDuplicates":
+          case "removeSingleRoles":
             if (checkPerm(message.guild, "MANAGE_ROLES")) {
-              var roleCount = 0;
-              var memberCount = 0;
-              var rlist = [];
               var roles = message.guild.roles.array();
+              var deleted = 0;
               for (let i = 0; i < roles.length; i++) {
-                if (roles[i].name.indexOf(guildConfig.rolePrefix) == 0) {
-                  rlist.push(roles[i])
-                }
-              }
-              var singles = {};
-              for (let i = 0; i < rlist.length; i++) {
-                let role = rlist[i];
-                if (role.name in singles) {
-                  let members = role.members.array();
-                  let orole = message.guild.roles.find('id', singles[role.name]);
-                  for (let j = 0; j < members.length; j++) {
-                    members[j].addRole(orole)
-                      .then(console.log(`Added a user to a original role.`));
-                    memberCount++;
+                if (roles[i].name.indexOf(guildConfig.rolePrefix) != -1) {
+                  if (roles[i].members.array().length <= 1) {
+                    roles[i].delete()
+                      .then(deleted++);
                   }
-                  role.delete()
-                    .then(console.log(`Deleted a duplicate role.`));
-                  roleCount++;
-                } else {
-                  singles[role.name] = role.id;
                 }
               }
-              message.reply("Done.\nMembers reassigned: " + memberCount + ".\nDuplicate roles deleted: " + roleCount + ".");
+              message.reply(`${deleted} roles have been deleted.`);
             } else {
-              message.reply("Sorry, but I do not seem to have permissions to manage roles on this server.");
+              message.reply(`Sorry, but I do not seem to have the permissions needed to perform this task.`);
             }
             break;
           case "showSettings":
