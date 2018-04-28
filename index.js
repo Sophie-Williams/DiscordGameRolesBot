@@ -189,6 +189,10 @@ client.on('message', (message) => {
                 "parameter": "text/false",
                 "desc": "Specifies the role the bot listens to. 'false' = owner only."
               },
+              "removeDuplicates": {
+                "parameter": "none",
+                "desc": "Removes duplicate roles and reassigns the member of them to the original role."
+              },
               "removeSingleRoles": {
                 "parameter": "none",
                 "desc": "Removes all roles created by this bot that have only 1 or less members."
@@ -241,6 +245,40 @@ client.on('message', (message) => {
               changeValid = true;
             } else {
               message.reply("please use either true or false.");
+            }
+            break;
+          case "removeDuplicates":
+            if (checkPerm(message.guild, "MANAGE_ROLES")) {
+              var roleCount = 0;
+              var memberCount = 0;
+              var rlist = [];
+              var roles = message.guild.roles.array();
+              for (let i = 0; i < roles.length; i++) {
+                if (roles[i].name.indexOf(guildConfig.rolePrefix) == 0) {
+                  rlist.push(roles[i])
+                }
+              }
+              var singles = {};
+              for (let i = 0; i < rlist.length; i++) {
+                let role = rlist[i];
+                if (role.name in singles) {
+                  let members = role.members.array();
+                  let orole = message.guild.roles.find('id', singles[role.name]);
+                  for (let j = 0; j < members.length; j++) {
+                    members[j].addRole(orole)
+                      .then(console.log(`Added a user to a original role.`));
+                    memberCount++;
+                  }
+                  role.delete()
+                    .then(console.log(`Deleted a duplicate role.`));
+                  roleCount++;
+                } else {
+                  singles[role.name] = role.id;
+                }
+              }
+              message.reply("Done.\nMembers reassigned: " + memberCount + ".\nDuplicate roles deleted: " + roleCount + ".");
+            } else {
+              message.reply("Sorry, but I do not seem to have permissions to manage roles on this server.");
             }
             break;
           case "removeSingleRoles":
