@@ -105,7 +105,12 @@ client.on('presenceUpdate', (oldMember, newMember) => {
             if (game) {
               var gname = game.name.replace("'", "").replace("’", "").replace("`", "");
               gname = gname.replace(/[^\w\s!]/gi, '');
-              gname = gname.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ').toUpperCase();
+              gname = gname.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
+              if (guildConfig.roleLowercase) {
+                gname = gname.toLowerCase();
+              } else {
+                gname = gname.toUpperCase();
+              }
               if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname) == -1)) {
                 var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
                 if (role) {
@@ -224,7 +229,12 @@ client.on('message', (message) => {
                 if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
                   nv = nv.replace("'", "").replace("’", "").replace("`", "");
                   nv = nv.replace(/[^\w\s!]/gi, '');
-                  nv = nv.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ').toUpperCase();
+                  nv = nv.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
+                  if (guildConfig.roleLowercase) {
+                    nv = nv.toLowerCase();
+                  } else {
+                    nv = nv.toUpperCase();
+                  }
                   if (nv[0] == " ") {
                     nv = nv.slice(1);
                   }
