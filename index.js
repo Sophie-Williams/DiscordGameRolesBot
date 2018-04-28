@@ -116,7 +116,8 @@ client.on('presenceUpdate', (oldMember, newMember) => {
               } else {
                 gname = gname.toUpperCase();
               }
-              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname) == -1)) {
+
+              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname.toUpperCase()) == -1)) {
                 var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
                 if (role) {
                   newMember.addRole(role);
