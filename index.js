@@ -210,6 +210,10 @@ client.on('message', (message) => {
               "blacklist": {
                 "parameter": "text",
                 "desc": "Add a name or more to the blacklist. If a given name is already present it will be removed. Can be comma-seperated: 'spotify, blender, game launcher'."
+              },
+              "roleLowercase": {
+                "parameter": "true/false",
+                "desc": "Specifies if rolenames should be lowercase or uppercase."
               }
             };
             var reply = "help is on the way:\n";
@@ -220,6 +224,14 @@ client.on('message', (message) => {
             }
             reply += "\nINFO: If you encounter any issues or have questions, feel free to contact me.\n";
             message.reply(reply);
+            break;
+          case "roleLowercase":
+            if (newValue == "true" || newValue == "false") {
+              changeValid = true;
+            } else {
+              message.reply("please use either true or false.");
+            }
+            break;
             break;
           case "blacklist":
             if (newValue.length > 0 && newValue[0] != ",") {
