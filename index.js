@@ -123,7 +123,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
                 gname = gname.toUpperCase();
               }
 
-              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname.toUpperCase()) == -1)) {
+              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname.toLowerCase()) == -1)) {
                 var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
                 if (role) {
                   newMember.addRole(role);
@@ -252,11 +252,7 @@ client.on('message', (message) => {
                 let nv = newValues[i];
                 if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
                   nv = convertName(nv);
-                  if (guildConfig.roleLowercase) {
-                    nv = nv.toLowerCase();
-                  } else {
-                    nv = nv.toUpperCase();
-                  }
+                  nv = nv.toLowerCase();
                   if (nv[0] == " ") {
                     nv = nv.slice(1);
                   }
