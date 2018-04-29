@@ -17,6 +17,12 @@ function configSetup() {
     } else {
       var config = require(guildFile);
       var change = false;
+      // TEMP
+      for (let z = 0; z < config.blacklist.length; z++) {
+        config.blacklist[z] = config.blacklist[z].toLowerCase();
+      }
+      change = true;
+      // TEMP
       for (var key in configTemplate) {
         if (!(key in config)) {
           config[key] = configTemplate[key];
