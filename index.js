@@ -30,6 +30,14 @@ function configSetup() {
   }
 }
 
+function convertName(name) {
+  name = name.replace("'", '').replace('’', '').replace('`', '');
+  name = name.replace('-', ' ');
+  name = name.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
+  name = name.replace(/[^\w\s!]/gi, '');
+  return name;
+}
+
 function getConfig(guildID) {
   var cfile = guildConfigFolder + guildID + ".json";
   if (fs.existsSync(cfile)) {
@@ -108,9 +116,7 @@ client.on('presenceUpdate', (oldMember, newMember) => {
           if (guildConfig.enable) {
             var game = newMember.presence.game;
             if (game) {
-              var gname = game.name.replace("'", "").replace("’", "").replace("`", "");
-              gname = gname.replace(/[^\w\s!]/gi, '');
-              gname = gname.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
+              var gname = convertName(game.name);
               if (guildConfig.roleLowercase) {
                 gname = gname.toLowerCase();
               } else {
@@ -245,9 +251,7 @@ client.on('message', (message) => {
               for (let i = 0; i < newValues.length; i++) {
                 let nv = newValues[i];
                 if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
-                  nv = nv.replace("'", "").replace("’", "").replace("`", "");
-                  nv = nv.replace(/[^\w\s!]/gi, '');
-                  nv = nv.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
+                  nv = convertName(nv);
                   if (guildConfig.roleLowercase) {
                     nv = nv.toLowerCase();
                   } else {
