@@ -31,8 +31,10 @@ function configSetup() {
 }
 
 function convertName(name) {
-  name = name.replace("'", '').replace('’', '').replace('`', '');
-  name = name.replace('-', ' ');
+  name = name.replace(new RegExp("'", 'g'), ' ');
+  name = name.replace(new RegExp('’', 'g'), ' ');
+  name = name.replace(new RegExp('`', 'g'), ' ');
+  name = name.replace(new RegExp('-', 'g'), ' ');
   name = name.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
   name = name.replace(/[^\w\s!]/gi, '');
   return name;
