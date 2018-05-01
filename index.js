@@ -209,7 +209,7 @@ client.on('message', (message) => {
                 "parameter": "text/false",
                 "desc": "Specifies the role the bot listens to. 'false' = owner only."
               },
-              "removeDuplicates": {
+              "removeDuplicateRoles": {
                 "parameter": "none",
                 "desc": "Removes duplicate roles and reassigns the member of them to the original role."
               },
@@ -279,7 +279,7 @@ client.on('message', (message) => {
               message.reply("please use either true or false.");
             }
             break;
-          case "removeDuplicates":
+          case "removeDuplicateRoles":
             if (checkPerm(message.guild, "MANAGE_ROLES")) {
               var roleCount = 0;
               var memberCount = 0;
@@ -302,7 +302,7 @@ client.on('message', (message) => {
                     memberCount++;
                   }
                   role.delete()
-                    .then(console.log(`Deleted a duplicate role.`));
+                    .then(console.log(`Deleted a duplicated role.`));
                   roleCount++;
                 } else {
                   singles[role.name] = role.id;
