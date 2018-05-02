@@ -34,6 +34,9 @@ function convertName(name) {
   name = name.replace(new RegExp("'", 'g'), ' ');
   name = name.replace(new RegExp('’', 'g'), ' ');
   name = name.replace(new RegExp('`', 'g'), ' ');
+  name = name.replace(new RegExp(' - ', 'g'), ' ');
+  name = name.replace(new RegExp('- ', 'g'), ' ');
+  name = name.replace(new RegExp(' -', 'g'), ' ');
   name = name.replace(new RegExp('-', 'g'), ' ');
   name = name.replace(/ [^\w\s!] |[^\w\s!] | [^\w\s!]/gi, ' ')
   name = name.replace(/[^\w\s!]/gi, '');
