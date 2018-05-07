@@ -1,3 +1,4 @@
+// TODO: Do permissions checks before every action.
 process.chdir('/home/zlyfer/DiscordBots/DiscordGameRolesBot');
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -31,9 +32,9 @@ function configSetup() {
 }
 
 function convertName(name) {
-  name = name.replace(new RegExp("'", 'g'), ' ');
-  name = name.replace(new RegExp('’', 'g'), ' ');
-  name = name.replace(new RegExp('`', 'g'), ' ');
+  name = name.replace(new RegExp("'", 'g'), '');
+  name = name.replace(new RegExp('’', 'g'), '');
+  name = name.replace(new RegExp('`', 'g'), '');
   name = name.replace(new RegExp(' - ', 'g'), ' ');
   name = name.replace(new RegExp('- ', 'g'), ' ');
   name = name.replace(new RegExp(' -', 'g'), ' ');
