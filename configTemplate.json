@@ -5,7 +5,9 @@
 	"roleMentionable": true,
 	"enable": true,
 	"configRole": "@everyone",
-	"blacklist": ["3DMARK", "DESMUME", "CUSTOM STATUS", "GETISTEAMCONTROLLER", "NVIDIA GEFORCE OVERLAY", "SPOTIFY", "VISUAL STUDIO CODE", "WARFRAME LAUNCHER", "GOOGLE", "BLENDER", "MANIAPLANET", "MEDIA PLAYER CLASSIC HOME CINEMA", "AIMP"],
+	"blacklist": ["3dmark", "desmume", "custom status", "getisteamcontroller", "nvidia geforce overlay", "spotify", "visual studio code", "warframe launcher", "google", "blender", "maniaplanet", "media player classic home cinema", "aimp"],
 	"blenable": true,
+	"whitelist": [],
+	"wlenable": false,
 	"roleLowercase": true
 }

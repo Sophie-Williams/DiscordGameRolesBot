@@ -31,7 +31,7 @@ function configSetup() {
   }
 }
 
-function convertName(name) {
+function secureName(name) {
   name = name.replace(new RegExp("'", 'g'), '');
   name = name.replace(new RegExp('’', 'g'), '');
   name = name.replace(new RegExp('`', 'g'), '');
@@ -80,9 +80,9 @@ function changeConfig(guild, key, newValue) {
   var guildFile = guildConfigFolder + guild.id + ".json";
   var guildConfig = getConfig(guild.id);
   var oldRolePrefix = guildConfig.rolePrefix;
-  if ("true".indexOf(newValue) != -1) {
+  if (newValue == "true") {
     newValue = true;
-  } else if ("false".indexOf(newValue) != -1) {
+  } else if (newValue == "false") {
     newValue = false;
   }
   guildConfig[key] = newValue;
@@ -122,14 +122,18 @@ client.on('presenceUpdate', (oldMember, newMember) => {
           if (guildConfig.enable) {
             var game = newMember.presence.game;
             if (game) {
-              var gname = convertName(game.name);
+              var gname = secureName(game.name);
               if (guildConfig.roleLowercase) {
                 gname = gname.toLowerCase();
               } else {
                 gname = gname.toUpperCase();
               }
 
-              if (guildConfig.blenable == false | (guildConfig.blenable && guildConfig.blacklist.indexOf(gname.toLowerCase()) == -1)) {
+              if (
+                (guildConfig.blenable == false && guildConfig.wlenable == false) |
+                (guildConfig.blenable && guildConfig.blacklist.indexOf(gname.toLowerCase()) == -1) |
+                (guildConfig.wlenable && guildConfig.whitelist.indexOf(gname.toLowerCase()) != -1)
+              ) {
                 var role = guild.roles.find('name', `${guildConfig.rolePrefix} ${gname}`);
                 if (role) {
                   newMember.addRole(role);
@@ -223,11 +227,19 @@ client.on('message', (message) => {
               },
               "blenable": {
                 "parameter": "true/false",
-                "desc": "Enable/Disable blacklist."
+                "desc": "Enable/Disable blacklist. Only either whitelist or blacklist can be enabled."
               },
               "blacklist": {
                 "parameter": "text",
                 "desc": "Add a name or more to the blacklist. If a given name is already present it will be removed. Can be comma-seperated: 'spotify, blender, game launcher'."
+              },
+              "wlenable": {
+                "parameter": "true/false",
+                "desc": "Enable/Disable whitelist. Only either whitelist or blacklist can be enabled."
+              },
+              "whitelist": {
+                "parameter": "text",
+                "desc": "Add a name or more to the whitelist. If a given name is already present it will be removed. Can be comma-seperated: 'league of legends, mindshow, playerunknowns battleground'."
               },
               "roleLowercase": {
                 "parameter": "true/false",
@@ -257,7 +269,7 @@ client.on('message', (message) => {
               for (let i = 0; i < newValues.length; i++) {
                 let nv = newValues[i];
                 if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
-                  nv = convertName(nv);
+                  nv = secureName(nv);
                   nv = nv.toLowerCase();
                   if (nv[0] == " ") {
                     nv = nv.slice(1);
@@ -277,6 +289,38 @@ client.on('message', (message) => {
             }
             break;
           case "blenable":
+            if (newValue == "true" || newValue == "false") {
+              changeValid = true;
+            } else {
+              message.reply("please use either true or false.");
+            }
+            break;
+          case "whitelist":
+            if (newValue.length > 0 && newValue[0] != ",") {
+              var newValues = newValue.split(',');
+              for (let i = 0; i < newValues.length; i++) {
+                let nv = newValues[i];
+                if (nv.length > 0 && nv != '"' && nv != "'" && nv != ',') {
+                  nv = secureName(nv);
+                  nv = nv.toLowerCase();
+                  if (nv[0] == " ") {
+                    nv = nv.slice(1);
+                  }
+                  let iof = guildConfig.whitelist.indexOf(nv);
+                  if (iof != -1) {
+                    guildConfig.whitelist.splice(iof, 1);
+                  } else {
+                    guildConfig.whitelist.push(nv);
+                  }
+                }
+              }
+              newValue = guildConfig.whitelist;
+              changeValid = true;
+            } else {
+              message.reply("you need to specify at least one name.");
+            }
+            break;
+          case "wlenable":
             if (newValue == "true" || newValue == "false") {
               changeValid = true;
             } else {
@@ -337,7 +381,13 @@ client.on('message', (message) => {
           case "showSettings":
             var reply = "these are the current settings and their values:\n";
             for (var key in guildConfig) {
-              reply += "**" + key + "**: __" + guildConfig[key] + "__\n";
+              let value = guildConfig[key];
+              if (Array.isArray(guildConfig[key]) == true) {
+                if (guildConfig[key].length == 0) {
+                  value = "None";
+                }
+              }
+              reply += "**" + key + "**: __" + value + "__\n";
             }
             message.reply(reply);
             break;
@@ -393,7 +443,20 @@ client.on('message', (message) => {
         }
         if (changeValid == true) {
           changeConfig(message.guild, cmd, newValue);
+          if (Array.isArray(newValue) == true) {
+            if (newValue.length == 0) {
+              newValue = "None";
+            }
+          }
           message.reply("**" + cmd + "** *has been changed to* **" + newValue + "**.");
+          if (cmd == "wlenable" && newValue == "true") {
+            changeConfig(message.guild, "blenable", "false");
+            message.reply("**" + "blenable" + "** *has been changed to* **" + "false" + "**.");
+          }
+          if (cmd == "blenable" && newValue == "true") {
+            changeConfig(message.guild, "wlenable", "false");
+            message.reply("**" + "wlenable" + "** *has been changed to* **" + "false" + "**.");
+          }
         }
       } else {
         message.reply("sorry but you seem to lack on rights to use me.")
